@@ -1,53 +1,20 @@
-import { useState, type FormEvent } from "react";
 import { ArrowRight, LockKeyhole, Mail, MapPin, UserRound } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { CuteButton } from "../components/CuteButton";
 import { FormField } from "../components/FormField";
-import { useGift } from "../context/GiftContext";
-import { submitGiftForm } from "../lib/formspree";
-
-interface FormErrors {
-  name?: string;
-  address?: string;
-}
+import { useGiftForm } from "../hooks/useGiftForm";
 
 export function Address() {
-  const navigate = useNavigate();
-  const { selectedBear, markSubmissionComplete } = useGift();
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [message, setMessage] = useState("");
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState(false);
+  const {
+    selectedBear,
+    values,
+    errors,
+    isSubmitting,
+    submitError,
+    updateField,
+    handleSubmit,
+  } = useGiftForm();
 
   if (!selectedBear) return null;
-  const chosenBear = selectedBear;
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const nextErrors: FormErrors = {};
-    if (!name.trim()) nextErrors.name = "Bạn chưa cho tớ biết tên nè 🥺";
-    if (!address.trim()) nextErrors.address = "Cho tớ xin địa chỉ nhé 🧸";
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
-    setIsSubmitting(true);
-    setSubmitError(false);
-    try {
-      await submitGiftForm({
-        name: name.trim(),
-        bear: chosenBear.name,
-        address: address.trim(),
-        message: message.trim(),
-      });
-      markSubmissionComplete();
-      navigate("/success");
-    } catch {
-      setSubmitError(true);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
 
   return (
     <section className="page-wrap inner-page address-page">
@@ -83,11 +50,8 @@ export function Address() {
                 name="name"
                 autoComplete="name"
                 placeholder="Ví dụ: Dương dễ thương"
-                value={name}
-                onChange={(event) => {
-                  setName(event.target.value);
-                  setErrors((current) => ({ ...current, name: undefined }));
-                }}
+                value={values.name}
+                onChange={(event) => updateField("name", event.target.value)}
                 aria-invalid={Boolean(errors.name)}
                 aria-describedby={errors.name ? "name-error" : undefined}
               />
@@ -106,11 +70,8 @@ export function Address() {
                 autoComplete="street-address"
                 placeholder="Số nhà, đường, phường/xã, quận/huyện..."
                 rows={3}
-                value={address}
-                onChange={(event) => {
-                  setAddress(event.target.value);
-                  setErrors((current) => ({ ...current, address: undefined }));
-                }}
+                value={values.address}
+                onChange={(event) => updateField("address", event.target.value)}
                 aria-invalid={Boolean(errors.address)}
                 aria-describedby={errors.address ? "address-error" : undefined}
               />
@@ -124,8 +85,8 @@ export function Address() {
                 name="message"
                 placeholder="Một điều bạn muốn nhắn gửi... (không bắt buộc)"
                 rows={2}
-                value={message}
-                onChange={(event) => setMessage(event.target.value)}
+                value={values.message}
+                onChange={(event) => updateField("message", event.target.value)}
               />
             </span>
           </FormField>

@@ -10,22 +10,32 @@ interface GiftContextValue {
 }
 
 const GiftContext = createContext<GiftContextValue | null>(null);
+const selectedBearKey = "cute-gift-selected-bear";
+const submissionKey = "cute-gift-submitted";
 
-function getSavedBear(): Bear | null {
+function readSessionValue(key: string): string | null {
   try {
-    const savedId = sessionStorage.getItem("cute-gift-selected-bear");
-    return bears.find((bear) => bear.id === savedId) ?? null;
+    return sessionStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
-function getSubmissionState(): boolean {
+function writeSessionValue(key: string, value: string) {
   try {
-    return sessionStorage.getItem("cute-gift-submitted") === "yes";
+    sessionStorage.setItem(key, value);
   } catch {
-    return false;
+    // The in-memory state remains usable when storage is unavailable.
   }
+}
+
+function getSavedBear(): Bear | null {
+  const savedId = readSessionValue(selectedBearKey);
+  return bears.find((bear) => bear.id === savedId) ?? null;
+}
+
+function getSubmissionState(): boolean {
+  return readSessionValue(submissionKey) === "yes";
 }
 
 export function GiftProvider({ children }: { children: ReactNode }) {
@@ -37,20 +47,12 @@ export function GiftProvider({ children }: { children: ReactNode }) {
 
   function setSelectedBear(bear: Bear) {
     setSelectedBearState(bear);
-    try {
-      sessionStorage.setItem("cute-gift-selected-bear", bear.id);
-    } catch {
-      // The in-memory selection still works when storage is unavailable.
-    }
+    writeSessionValue(selectedBearKey, bear.id);
   }
 
   function markSubmissionComplete() {
     setSubmissionComplete(true);
-    try {
-      sessionStorage.setItem("cute-gift-submitted", "yes");
-    } catch {
-      // The current navigation still works when storage is unavailable.
-    }
+    writeSessionValue(submissionKey, "yes");
   }
 
   return (

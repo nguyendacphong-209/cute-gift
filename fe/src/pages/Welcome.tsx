@@ -15,7 +15,7 @@ export function Welcome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <span className="eyebrow-dot" /> MỘT LỜI NHẮN TỪ HỘI MÈO
+          <span className="eyebrow-dot" /> LỜI NHẮN TỪ HỘI MÊU
         </motion.span>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
@@ -34,8 +34,8 @@ export function Welcome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          Đại ka có một món quà nhỏ dành cho bạn. Mấy bé mèo đang nóng lòng muốn
-          kể lắm!
+          Đại ka có một món quà nhỏ dành cho cưng. Mấy bé mèo đang nóng lòng
+          muốn kể lắm!
         </motion.p>
         <motion.div
           className="welcome-action"
@@ -63,7 +63,7 @@ export function Welcome() {
           <span>
             gửi riêng
             <br />
-            cho cho daika thoai
+            cho đàn em daika thoai
           </span>
         </motion.div>
       </div>

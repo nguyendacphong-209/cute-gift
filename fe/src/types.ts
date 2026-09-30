@@ -6,6 +6,14 @@ export interface Bear {
   color: string
 }
 
+export interface Cat {
+  image: string;
+  name: string;
+  message: string;
+  background: string;
+  sound: string;
+}
+
 export interface GiftSubmission {
   name: string
   bear: string

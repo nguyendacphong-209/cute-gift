@@ -24,7 +24,7 @@ function GiftLayout() {
             <Gift size={19} aria-hidden="true" />
           </span>
           <span>
-            một món quà nhỏ<span className="brand-period">.</span>
+            Món quà nhỏ<span className="brand-period">.</span>
           </span>
         </Link>
         {!isSuccess && (
@@ -47,7 +47,7 @@ function GiftLayout() {
         )}
         <div className="header-note">
           <Heart size={14} fill="currentColor" aria-hidden="true" />
-          <span>làm bằng yêu thương</span>
+          <span>Tiếp thêm động lực</span>
         </div>
       </header>
 
@@ -119,11 +119,30 @@ function GiftLayout() {
             </span>
           ) : (
             <span className="footer-whisper">
-              thông tin của bạn được giữ riêng tư
+              thông tin của em được giữ riêng tư
             </span>
           )}
         </footer>
       )}
+      <footer className="site-copyright">
+        <div className="site-copyright__brand">
+          <span className="site-copyright__dot" aria-hidden="true" />
+          <span>Made with a little magic</span>
+        </div>
+
+        <div className="site-copyright__meta">
+          <span>© 2026 NguyenDacPhong</span>
+
+          <span className="site-copyright__separator" aria-hidden="true">
+            ✦
+          </span>
+
+          <a href="mailto:dacphong2092003@gmail.com">
+            dacphong2092003@gmail.com
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }

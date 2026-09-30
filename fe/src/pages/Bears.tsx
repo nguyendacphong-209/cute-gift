@@ -1,11 +1,41 @@
-import { ArrowRight, Check, Heart, Sparkles } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import type { Variants } from "framer-motion";
 import { Link } from "react-router-dom";
+import { BearCard } from "../components/BearCard";
 import { CuteButton } from "../components/CuteButton";
 import { useGift } from "../context/GiftContext";
 import { bears } from "../data/bears";
+import { useBearCarousel } from "../hooks/useBearCarousel";
+
+const slideVariants: Variants = {
+  enter: (direction: number) => ({
+    opacity: 0,
+    x: direction * 38,
+    filter: "blur(3px)",
+  }),
+  center: { opacity: 1, x: 0, filter: "blur(0px)" },
+  exit: (direction: number) => ({
+    opacity: 0,
+    x: direction * -38,
+    filter: "blur(3px)",
+  }),
+};
 
 export function Bears() {
   const { selectedBear, setSelectedBear } = useGift();
+  const {
+    currentSlide,
+    direction,
+    itemsPerSlide,
+    slideCount,
+    visibleStart,
+    visibleEnd,
+    moveToSlide,
+    handleSwipe,
+  } = useBearCarousel(bears.length);
+  const visibleBears = bears.slice(visibleStart, visibleEnd);
+
   return (
     <section className="page-wrap inner-page bear-page">
       <div className="page-heading">
@@ -17,64 +47,75 @@ export function Bears() {
         </h1>
         <p>Bé nào cũng đang mong được gặp em lắm.</p>
       </div>
-      <div className="bear-grid">
-        {bears.map((bear, index) => {
-          const isSelected = selectedBear?.id === bear.id;
-          return (
-            <article
-              className={`bear-card bear-${bear.color} ${isSelected ? "is-selected" : ""}`}
-              key={bear.id}
-              style={{ animationDelay: `${index * 100}ms` }}
+      <div className="bear-carousel" aria-roledescription="carousel">
+        <div className="bear-slider-window">
+          <AnimatePresence mode="wait" initial={false} custom={direction}>
+            <motion.div
+              key={`${itemsPerSlide}-${currentSlide}`}
+              className="bear-grid"
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              drag={itemsPerSlide === 1 ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.12}
+              dragMomentum={false}
+              onDragEnd={(_, info) => handleSwipe(info.offset.x)}
             >
-              <button
-                className="bear-select-area"
-                type="button"
-                onClick={() => setSelectedBear(bear)}
-                aria-pressed={isSelected}
-              >
-                <span className="bear-image-wrap">
-                  <img
-                    src={bear.image}
-                    alt={`${bear.name}, món quà bạn có thể chọn`}
-                    loading="lazy"
-                  />
-                  <span
-                    className={`selection-mark ${isSelected ? "checked" : ""}`}
-                    aria-hidden="true"
-                  >
-                    {isSelected ? <Check size={17} /> : <Heart size={17} />}
-                  </span>
-                  {isSelected && (
-                    <span className="selected-ribbon">bé em chọn</span>
-                  )}
-                </span>
-                <span className="bear-card-copy">
-                  <span className="bear-card-name">
-                    {bear.name}
-                    <span aria-hidden="true">✳</span>
-                  </span>
-                  <span className="bear-card-description">
-                    {bear.description}
-                  </span>
-                </span>
-              </button>
-              <button
-                className={`select-button ${isSelected ? "selected" : ""}`}
-                type="button"
-                onClick={() => setSelectedBear(bear)}
-                aria-pressed={isSelected}
-              >
-                {isSelected ? (
-                  <>
-                    <Check size={15} aria-hidden="true" /> Bé này nhé!
-                  </>
-                ) : (
-                  "Chọn bé này"
-                )}
-              </button>
-            </article>
-          );
-        })}
+              {visibleBears.map((bear, index) => (
+                <BearCard
+                  key={bear.id}
+                  bear={bear}
+                  isSelected={selectedBear?.id === bear.id}
+                  animationDelay={index * 90}
+                  onSelect={setSelectedBear}
+                />
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="bear-slider-controls">
+          <button
+            className="slider-arrow"
+            type="button"
+            aria-label="Xem các bé gấu trước"
+            onClick={() => moveToSlide(currentSlide - 1)}
+            disabled={currentSlide === 0}
+          >
+            <ChevronLeft size={20} aria-hidden="true" />
+          </button>
+          <div className="slider-progress" aria-live="polite">
+            <span className="slider-count">
+              {String(currentSlide + 1).padStart(2, "0")}
+              <span> / {String(slideCount).padStart(2, "0")}</span>
+            </span>
+            <div
+              className="slider-progress-track"
+              role="progressbar"
+              aria-label="Tiến trình xem các bé gấu"
+              aria-valuemin={1}
+              aria-valuemax={slideCount}
+              aria-valuenow={currentSlide + 1}
+            >
+              <span
+                style={{ width: `${((currentSlide + 1) / slideCount) * 100}%` }}
+              />
+            </div>
+          </div>
+          <button
+            className="slider-arrow"
+            type="button"
+            aria-label="Xem các bé gấu tiếp theo"
+            onClick={() => moveToSlide(currentSlide + 1)}
+            disabled={currentSlide === slideCount - 1}
+          >
+            <ChevronRight size={20} aria-hidden="true" />
+          </button>
+        </div>
       </div>
       <div className="page-cta bear-cta">
         <span aria-live="polite">
