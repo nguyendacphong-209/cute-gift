@@ -1,0 +1,12 @@
+{
+  "name": "a-tiny-gift-from-the-cats",
+  "private": true,
+  "workspaces": [
+    "fe"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace fe",
+    "build": "npm run build --workspace fe",
+    "check": "npm run check --workspace fe"
+  }
+}
