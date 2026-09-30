@@ -82,7 +82,7 @@ export function Address() {
                 id="name"
                 name="name"
                 autoComplete="name"
-                placeholder="Ví dụ: An dễ thương"
+                placeholder="Ví dụ: Dương dễ thương"
                 value={name}
                 onChange={(event) => {
                   setName(event.target.value);
